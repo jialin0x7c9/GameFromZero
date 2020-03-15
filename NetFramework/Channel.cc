@@ -1,5 +1,6 @@
 #include "Channel.h"
 #include "assert.h"
+#include "EventLoop.h"
 #include <poll.h>
 
 const int Channel::kNoneEvent = 0;
@@ -21,14 +22,39 @@ Channel::Channel(EventLoop *loop, int fd):
 
 Channel::~Channel()
 {
-    assert(!eventHandling_);
-    assert(!addToLoop_);
+//    assert(!eventHandling_);
+//    assert(!addToLoop_);
     //must be in loop thread
-    if (loop_->isInLoopThread())
-    {
+    //if (loop_->isInLoopThread())
+    //{
         //loop must has this channel;
-        assert(!loop_->hasChannel(this));
-    }
+    //    assert(!loop_->hasChannel(this));
+    //}
+}
+
+int Channel::index()
+{
+    return pollIndex_;
+}
+
+int Channel::events() const
+{
+    return events_;
+}
+
+int Channel::fd() const
+{
+    return fd_;
+}
+
+void Channel::set_revents(int revt)
+{
+    curEvents_ = revt;
+}
+
+void Channel::set_index(int index)
+{
+    pollIndex_ = index;
 }
 
 void Channel::setReadCallback(ReadEventCallback cb)

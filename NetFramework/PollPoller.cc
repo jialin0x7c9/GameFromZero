@@ -1,4 +1,5 @@
 #include "PollPoller.h"
+#include "Channel.h"
 #include <poll.h>
 #include <time.h>
 
@@ -12,7 +13,7 @@ PollPoller::~PollPoller() = default;
 
 int PollPoller::poll(int timeoutMs, ChannelList *activeChannelList)
 {
-    int numOfActiveEvents = poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
+    int numOfActiveEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
     int savedErrno = errno;
     time_t now = 0;
     time(&now);
@@ -69,7 +70,7 @@ void PollPoller::updateChannel(Channel *channel)
         pfd.fd = channel->fd();
         pfd.events = static_cast<short>(channel->events());
         pfd.revents = 0;
-        if (channel->isNoneEvnet())
+        if (channel->isNoneEvent())
         {
             pfd.fd = -channel->fd()-1;
         }
@@ -80,14 +81,14 @@ void PollPoller::removeChannel(Channel *channel)
 {
     int idx = channel->index();
     size_t n = channels_.erase(channel->fd());
-    if (implicit_cast<size_t>(idx) == pollfds_size()-1)
+    if (static_cast<size_t>(idx) == pollfds_.size()-1)
     {
         pollfds_.pop_back();
     }
     else
     {
         int channelAtEnd = pollfds_.back().fd;
-        iter_swap(pollfds_.begin()+idx, pollfds_end()-1);
+        iter_swap(pollfds_.begin()+idx, pollfds_.end()-1);
         if (channelAtEnd < 0)
         {
             channelAtEnd = -channelAtEnd-1;

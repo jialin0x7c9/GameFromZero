@@ -1,5 +1,7 @@
 #include "Poll.h"
 #include "Channel.h"
+#include "EpollPoller.h"
+#include "PollPoller.h"
 #include <stdlib.h>
 
 Poller::Poller(EventLoop *loop):ownerLoop_(loop)
@@ -23,7 +25,7 @@ Poller *Poller::newDefaultPoller(EventLoop *loop)
     }
     else
     {
-        return new EPollPoller(loop);
+        return new EpollPoller(loop);
     }
 }
 

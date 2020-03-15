@@ -1,10 +1,12 @@
 #include "EventLoop.h"
+#include "Poll.h"
 
 
 EventLoop::EventLoop():
     looping_(false),
     eventHandling_(false),
-    threadId_(CurrentThread::tid()),
+//    threadId_(CurrentThread::tid()),
+    threadId_(0),
     poller_(Poller::newDefaultPoller(this)),
     currentActiveChannel_(NULL)
 {

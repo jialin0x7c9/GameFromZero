@@ -4,9 +4,9 @@
 #include <vector>
 #include <atomic>
 #include <memory>
-
 #include "Channel.h"
 
+class Poller;
 class EventLoop : noncopyable
 {
 public:

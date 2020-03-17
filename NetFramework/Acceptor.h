@@ -3,6 +3,7 @@
 #include <functional>
 #include "Channel.h"
 #include "Socket.h"
+#include <sys/socket.h>
 
 class EventLoop;
 class InetAddress;
@@ -17,6 +18,8 @@ public:
     void setNewConnectionCallback(const NewConnectionCallback &cb);
     bool listenning() const;
     void listen();
+
+    static int createNonblockingOrDie(sa_family_t family);
 private:
     void handleRead();
     EventLoop *loop_;

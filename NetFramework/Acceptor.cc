@@ -1,7 +1,10 @@
 #include "Acceptor.h"
+#include "InetAddress.h"
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 void Acceptor::setNewConnectionCallback(const NewConnectionCallback &cb)
 {
@@ -10,7 +13,7 @@ void Acceptor::setNewConnectionCallback(const NewConnectionCallback &cb)
 
 Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reuseport):
     loop_(loop),
-    acceptSocket_(sockets::createNonblockingOrDie(listenAddr.family())),
+    acceptSocket_(Acceptor::createNonblockingOrDie(listenAddr.family())),
     acceptChannel_(loop, acceptSocket_.fd()),
     listenning_(false),
     idleFd_(::open("/dev/null", O_RDONLY|O_CLOEXEC))
@@ -19,6 +22,12 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     acceptSocket_.setReusePort(reuseport);
     acceptSocket_.bindAddress(listenAddr);
     acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
+}
+
+int Acceptor::createNonblockingOrDie(sa_family_t family)
+{
+    int socketfd = ::socket(family, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, IPPROTO_TCP);
+    return socketfd;
 }
 
 Acceptor::~Acceptor()
@@ -47,7 +56,7 @@ void Acceptor::handleRead()
         }
         else
         {
-            sockets::close(connfd);
+            close(connfd);
         }
     }
     else

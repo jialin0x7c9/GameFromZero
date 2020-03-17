@@ -14,6 +14,11 @@ Socket::~Socket()
     close(sockfd_);
 }
 
+int Socket::fd() const
+{
+    return sockfd_;
+}
+
 
 void Socket::bindAddress(const InetAddress &addr)
 {

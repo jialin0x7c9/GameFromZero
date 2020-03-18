@@ -11,6 +11,13 @@ InetAddress::InetAddress(std::string ip, unsigned short port)
 }
 
 
+const struct sockaddr *InetAddress::getSockAddr() const
+{
+    return static_cast<const struct sockaddr*>(static_cast<const void*>(&addr_));
+}
+
+
+
 sa_family_t InetAddress::family()const
 {
     return addr_.sin_family;

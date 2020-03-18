@@ -1,10 +1,12 @@
 #include "Socket.h"
+#include "InetAddress.h"
 #include <string.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/uio.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -80,8 +82,8 @@ void Socket::setReuseAddr(bool on)
 
 void Socket::setReusePort(bool on)
 {
-    int optval = on ? 1 : 0;
-    int ret = ::setsockopt(sockfd_, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof optval));
+//    int optval = on ? 1 : 0;
+//    int ret = ::setsockopt(sockfd_, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof optval));
 
 }
 

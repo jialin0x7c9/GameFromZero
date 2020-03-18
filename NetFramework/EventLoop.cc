@@ -22,7 +22,7 @@ EventLoop::~EventLoop()
 void EventLoop::loop()
 {
     looping_ = true;
-    while(!quit_)
+    while(1)
     {
         activeChannels_.clear();
         int pollReturnTime = poller_->poll(1000, &activeChannels_);

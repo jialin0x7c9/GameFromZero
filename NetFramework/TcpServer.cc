@@ -10,6 +10,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::
         acceptor_(new Acceptor(loop, listenAddr, reusePort))
     {
         acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, _1, _2));
+		acceptor_->listen();
     }
 
 

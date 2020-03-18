@@ -6,24 +6,21 @@
 #include <string.h>
 #include <map>
 
+using std::placeholders::_1;
+using std::placeholders::_2;
+
 class TcpServer : noncopyable
 {
 public:
     typedef std::function<void()> ConnectionCallback;
 
-    TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::string &listenAddr, const std::string &nameArg, bool reusePort = false):
-        loop_(loop),
-        ipPort(listenAddr.toIpPort()),
-        name(nameArg),
-        acceptor_(new Acceptor(loop, listenAddr, reusePort))
-    {
-        acceptor_->setNewConnectionCallback(connectionCallback_);
-    }
+    TcpServer(EventLoop *loop, const InetAddress &listenAddr,  const std::string &nameArg, bool reusePort = false);
 
-    void setConnectionCallback(const ConnectionCallback &cb)
-    {
-        connectionCallback_ = cb;
-    }
+    void setConnectionCallback(const ConnectionCallback &cb);
+
+private:
+    void newConnection(int sockfd, const InetAddress &peerAddr);
+
 
 private:
     EventLoop *loop_;

@@ -1,6 +1,8 @@
 #include "TcpConnection.h"
 #include "Channel.h"
 #include "Socket.h"
+#include "unistd.h"
+#include "EventLoop.h"
 
 using std::placeholders::_1;
 
@@ -11,7 +13,8 @@ TcpConnection::TcpConnection(EventLoop *loop, const std::string &name, int sockf
     channel_(new Channel(loop, sockfd)),
     localAddr_(localAddr),
     peerAddr_(peerAddr),
-    highWaterMark_(64*1024*1024)
+    highWaterMark_(64*1024*1024),
+    reading_(true)
 {
     channel_->setReadCallback(std::bind(&TcpConnection::handleRead, this, _1));
     channel_->setWriteCallback(std::bind(&TcpConnection::handleWrite, this));
@@ -56,7 +59,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
             remaining = len - nwrote;
             if (remaining == 0 && writeCompleteCallback_)
             {
-                writeCompleteCallback_();
+                loop_->queueInLoop(std::bind(writeCompleteCallback_, shared_from_this()));
             }
         }
         else
@@ -140,7 +143,7 @@ void TcpConnection::stopReadInLoop()
 }
 
 
-void TcpConnection::connectionEstablished()
+void TcpConnection::connectEstablished()
 {
     setState(kConnected);
     channel_->tie(shared_from_this());

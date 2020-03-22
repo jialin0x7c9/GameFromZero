@@ -7,11 +7,12 @@
 #include <string>
 #include "InetAddress.h"
 
+#include "Buffer.h"
+
 class Channel;
 class EventLoop;
 class Socket;
 class TcpConnection;
-class Buffer;
 
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 typedef std::function<void (const TcpConnectionPtr&)> ConnectionCallback;
@@ -54,8 +55,11 @@ public:
         closeCallback_ = cb;
     }
 
-    void connectionEstablished();
+    void connectEstablished();
     void connectionDestroyed();
+    void startRead();
+    void stopRead();
+
 private:
     enum StateE 
     {
@@ -66,6 +70,10 @@ private:
     void handleClose();
     void handleError();
     void setState(StateE s);
+    void sendInLoop(const void *message, size_t len);
+    void shutdownInLoop();
+    void startReadInLoop();
+    void stopReadInLoop();
 
 
 private:
@@ -84,4 +92,5 @@ private:
     StateE state_;
     Buffer inputBuffer_;
     Buffer outputBuffer_;
+    bool reading_;
 };

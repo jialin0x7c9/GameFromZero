@@ -5,6 +5,7 @@
 #include <memory>
 #include <string.h>
 #include <map>
+#include "TcpConnection.h"
 
 using std::placeholders::_1;
 using std::placeholders::_2;
@@ -12,7 +13,6 @@ using std::placeholders::_2;
 class TcpServer : noncopyable
 {
 public:
-    typedef std::function<void()> ConnectionCallback;
 
     TcpServer(EventLoop *loop, const InetAddress &listenAddr,  const std::string &nameArg, bool reusePort = false);
 
@@ -20,6 +20,7 @@ public:
 
 private:
     void newConnection(int sockfd, const InetAddress &peerAddr);
+    void removeConnection(const TcpConnectionPtr &conn);
 
 
 private:
@@ -28,6 +29,13 @@ private:
     const std::string name;
     std::unique_ptr<Acceptor> acceptor_;
     ConnectionCallback connectionCallback_;
+    MessageCallback messageCallback_;
+    WriteCompleteCallback writeCompleteCallback_;
+
+
+    int nextConnId_;
+    typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
+    ConnectionMap connections_;
 };
 
 

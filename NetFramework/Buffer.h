@@ -1,4 +1,5 @@
-
+#include <sys/types.h>
+#include <vector>
 
 class Buffer 
 {
@@ -9,19 +10,22 @@ public:
 	explicit Buffer(size_t initialSize = kInitialSize):
 		buffer_(kCheapPrepend + initialSize),
 		readerIndex_(kCheapPrepend),
-		writeIndex_(kCheapPrepend)
+		writerIndex_(kCheapPrepend)
 		{
 			
 		}
 	
 	size_t readableBytes() const
 	{
-		return writeIndex_ - readerIndex_;
+		return writerIndex_ - readerIndex_;
 	}
+
+
+    ssize_t readFd(int fd, int *savedErrno);
 	
 	size_t writableBytes() const
 	{
-		return buffer_size() - writerIndex_;
+		return buffer_.size() - writerIndex_;
 	}
 	
 	size_t prependableBytes() const
@@ -56,7 +60,7 @@ public:
 	void append(const char *data, size_t len)
 	{
 		ensureWritableBytes(len);
-		std::copy(data, data+len, &*buffer_.begin()+writeIndex_);
+		std::copy(data, data+len, &*buffer_.begin()+writerIndex_);
 		writerIndex_ += len;
 	}
 	
@@ -85,7 +89,7 @@ public:
 		}
 	}
 	
-	void append(const void *date, size_t len)
+	void append(const void *data, size_t len)
 	{
 		append(static_cast<const char *>(data), len);
 	}

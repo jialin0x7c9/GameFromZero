@@ -1,4 +1,6 @@
 #include "Buffer.h"
+#include <sys/uio.h>
+#include <errno.h>
 
 ssize_t Buffer::readFd(int fd, int *savedErrno)
 {
@@ -11,13 +13,13 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
 	vec[1].iov_len = sizeof(extrabuf);
 	const int iovcnt = (writable < sizeof(extrabuf)) ? 2 : 1;
 	const ssize_t n = readv(fd, vec, iovcnt);
-	id (n < 0)
+	if (n < 0)
 	{
 		*savedErrno = errno;
 	}
 	else if (static_cast<size_t>(n) <= writable)
 	{
-		writerIndex += n;
+		writerIndex_ += n;
 	}
 	else
 	{

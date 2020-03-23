@@ -1,10 +1,11 @@
 #include "noncopyable.h"
+#include <pthread.h>
 
 
 class MutexLock : noncopyable
 {
 public:
-	MutexLock():holder_(0)
+	MutexLock()
 	{
 		pthread_mutex_init(&mutex_, NULL);
 	}
@@ -30,10 +31,16 @@ private:
 class MutexLockGuard : noncopyable
 {
 public:
-	explicit MutexLock(MutexLock &mutex):mutex_(mutex)
+	MutexLockGuard(MutexLock &mutex):mutex_(mutex)
 	{
 		mutex_.lock();
 	}
+
+	~MutexLockGuard()
+	{
+		mutex_.unlock();
+	}
+
 private:
 	MutexLock &mutex_;
 };

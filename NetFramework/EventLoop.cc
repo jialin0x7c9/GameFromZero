@@ -1,17 +1,20 @@
 #include "EventLoop.h"
 #include "Poll.h"
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <sys/eventfd.h>
 
 //线程变量
 __thread EventLoop *t_loopInThisThread = 0;
 __thread int t_cachedTid = 0;
 
-
+    
 
 int EventLoop::tid()
 {
 	if (__builtin_expect(t_cachedTid==0, 0))
 	{
-		cacheTid();
+		cachedTid();
 	}
 	return t_cachedTid;
 }
@@ -45,7 +48,7 @@ EventLoop::EventLoop():
     currentActiveChannel_(NULL)
 {
 	//一个线程只能有一个EventLoop对象的判断
-	if (t_LoopInThisThread)
+	if (t_loopInThisThread)
 	{
 		//退出
 	}
@@ -108,7 +111,7 @@ void EventLoop::queueInLoop(Functor cb)
 		MutexLockGuard lock(mutex_);
 		pendingFunctors_.push_back(std::move(cb));
 	}
-	if (!isInLoopThread() || callingPendingFunctors)
+	if (!isInLoopThread() || callingPendingFunctors_)
 	{
 		wakeup();
 	}
@@ -151,5 +154,13 @@ void EventLoop::removeChannel(Channel *channel)
 {
     poller_->removeChannel(channel);
 }
+
+void EventLoop::abortNotInLoopThread()
+{
+	
+}
+
+
+
 
 

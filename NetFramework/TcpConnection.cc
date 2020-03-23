@@ -42,6 +42,13 @@ void TcpConnection::send(Buffer *buf)
     }
 }
 
+void TcpConnection::setState(StateE s)
+{
+	state_ = s; 
+}
+
+
+
 void TcpConnection::sendInLoop(const void *data, size_t len)
 {
     ssize_t nwrote = 0;
@@ -220,6 +227,12 @@ void TcpConnection::handleClose()
     TcpConnectionPtr guardThis(shared_from_this());
     connectionCallback_(guardThis);
     closeCallback_(guardThis);
+}
+
+
+void TcpConnection::handleError()
+{
+	
 }
 
 

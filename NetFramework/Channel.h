@@ -27,8 +27,16 @@ public:
     void enableWriting();
     void disableWriting();
     void disableAll();
-    bool isWriting()const;
-    bool isReading()const;
+    bool isWriting()const
+	{
+		return events_ & kWriteEvent;
+	}
+	
+    bool isReading()const
+	{
+		return events_ & kReadEvent;
+	}
+	
     int index();
     void set_index(int idx);
     void update();

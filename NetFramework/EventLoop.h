@@ -5,6 +5,7 @@
 #include <atomic>
 #include <memory>
 #include "Channel.h"
+#include "Mutex.h"
 
 class Poller;
 class EventLoop : noncopyable
@@ -27,7 +28,10 @@ public:
 			abortNotInLoopThread();
 		}
 	}
-	bool isInLoopThread() const;
+	bool isInLoopThread() const
+	{
+        return threadId_ == EventLoop::tid();
+	}
 	void runInLoop(Functor cb);
 	void queueInLoop(Functor cb);
 	void wakeup();

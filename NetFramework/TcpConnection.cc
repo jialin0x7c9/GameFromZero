@@ -42,6 +42,11 @@ void TcpConnection::send(Buffer *buf)
     }
 }
 
+void TcpConnection::send(const void *data, size_t len)
+{
+	sendInLoop(data, len);
+}
+
 void TcpConnection::setState(StateE s)
 {
 	state_ = s; 
@@ -56,7 +61,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
     bool faultError = false;
     if (state_ == kDisconnected)
     {
-        return;
+//        return;
     }
     if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
     {

@@ -27,6 +27,7 @@ public:
     TcpConnection(EventLoop *loop, const std::string &name, int sockfd, const InetAddress &localAddr, const InetAddress &peeraddr);
     ~TcpConnection();
     void send(Buffer *message);
+	void send(const void *data, size_t len);
     void shutdown();
     void setTcpNoDelay(bool on);
     void setConnectionCallback(const ConnectionCallback &cb)

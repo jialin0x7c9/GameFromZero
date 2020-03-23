@@ -33,7 +33,8 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setMessageCallback(messageCallback_);
     conn->setWriteCompleteCallback(writeCompleteCallback_);
     //conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));
-    loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+    //loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+    conn->send(connName.c_str(), connName.length());
 }
 
 

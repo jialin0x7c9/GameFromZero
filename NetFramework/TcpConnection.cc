@@ -227,11 +227,12 @@ void TcpConnection::handleWrite()
 
 void TcpConnection::handleClose()
 {
-    setState(kDisconnected);
-    channel_->disableAll();
-    TcpConnectionPtr guardThis(shared_from_this());
-    connectionCallback_(guardThis);
-    closeCallback_(guardThis);
+    printf("Close\n");
+//    setState(kDisconnected);
+//    channel_->disableAll();
+//    TcpConnectionPtr guardThis(shared_from_this());
+//    connectionCallback_(guardThis);
+//    closeCallback_(guardThis);
 }
 
 

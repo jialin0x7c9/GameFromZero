@@ -7,7 +7,8 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::
         loop_(loop),
         ipPort_("x"),
         name(nameArg),
-        acceptor_(new Acceptor(loop, listenAddr, reusePort))
+        acceptor_(new Acceptor(loop, listenAddr, reusePort)),
+        nextConnId_(1)
     {
         acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, _1, _2));
 		acceptor_->listen();
@@ -26,6 +27,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     //Get TcpConnectio a name;
     char buf[64];
     snprintf(buf, sizeof(buf), "NewConn:%d", nextConnId_);
+    ++nextConnId_;
     std::string connName = buf;
     TcpConnectionPtr conn(new TcpConnection(loop_, connName, sockfd, localAddrInet, peerAddr));
     connections_[connName] = conn;
@@ -33,8 +35,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setMessageCallback(messageCallback_);
     conn->setWriteCompleteCallback(writeCompleteCallback_);
     //conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));
-    //loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
-    conn->send(connName.c_str(), connName.length());
+    loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
 }
 
 

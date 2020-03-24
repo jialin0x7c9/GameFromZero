@@ -1,5 +1,6 @@
 #include "InetAddress.h"
 #include "TcpServer.h"
+#include <memory>
 
 
 
@@ -46,6 +47,7 @@ void TcpServer::removeConnection(const TcpConnectionPtr &conn)
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 {
+    printf("count=%ld\n", conn.use_count());
 	size_t n = connections_.erase(conn->name());
 	loop_->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }

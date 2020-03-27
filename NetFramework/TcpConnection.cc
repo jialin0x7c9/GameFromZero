@@ -163,7 +163,7 @@ void TcpConnection::connectEstablished()
     connectionCallback_(shared_from_this());
 }
 
-void TcpConnection::connectionDestroyed()
+void TcpConnection::connectDestroyed()
 {
     if (state_ == kConnected)
     {
@@ -227,12 +227,12 @@ void TcpConnection::handleWrite()
 
 void TcpConnection::handleClose()
 {
-    printf("Close\n");
-//    setState(kDisconnected);
-//    channel_->disableAll();
-//    TcpConnectionPtr guardThis(shared_from_this());
-//    connectionCallback_(guardThis);
-//    closeCallback_(guardThis);
+    setState(kDisconnected);
+    channel_->disableAll();
+    //TcpConnectionPtr guardThis(shared_from_this());
+    //connectionCallback_(guardThis);
+    //closeCallback_(guardThis);
+    closeCallback_(shared_from_this());
 }
 
 

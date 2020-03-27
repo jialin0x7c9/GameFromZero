@@ -57,9 +57,13 @@ public:
     }
 
     void connectEstablished();
-    void connectionDestroyed();
+    void connectDestroyed();
     void startRead();
     void stopRead();
+	std::string name() const
+	{
+		return name_;
+	}
 
 private:
     enum StateE 

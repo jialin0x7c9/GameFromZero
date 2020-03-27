@@ -34,15 +34,23 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setConnectionCallback(connectionCallback_);
     conn->setMessageCallback(messageCallback_);
     conn->setWriteCompleteCallback(writeCompleteCallback_);
-    //conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));
+    conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));
     loop_->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
 }
 
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn)
 {
-
+	loop_->runInLoop(std::bind(&TcpServer::removeConnectionInLoop, this, conn));	
 }
+
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
+{
+	size_t n = connections_.erase(conn->name());
+	loop_->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+}
+
+
 
 
 void TcpServer::setConnectionCallback(const ConnectionCallback &cb)

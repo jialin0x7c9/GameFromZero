@@ -9,6 +9,7 @@
 
 using std::placeholders::_1;
 using std::placeholders::_2;
+using std::placeholders::_3;
 
 class TcpServer : noncopyable
 {
@@ -17,10 +18,15 @@ public:
     TcpServer(EventLoop *loop, const InetAddress &listenAddr,  const std::string &nameArg, bool reusePort = false);
 
     void setConnectionCallback(const ConnectionCallback &cb);
+	void setMessageCallback(const MessageCallback &cb)
+	{
+		messageCallback_ = cb;
+	}
 
 private:
     void newConnection(int sockfd, const InetAddress &peerAddr);
     void removeConnection(const TcpConnectionPtr &conn);
+	void removeConnectionInLoop(const TcpConnectionPtr &conn);
 
 
 private:

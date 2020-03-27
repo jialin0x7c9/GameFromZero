@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <vector>
+#include <string>
 
 class Buffer 
 {
@@ -62,6 +63,12 @@ public:
 		ensureWritableBytes(len);
 		std::copy(data, data+len, &*buffer_.begin()+writerIndex_);
 		writerIndex_ += len;
+	}
+
+	std::string retrieveAllAsString()
+	{
+		std::string result(peek(), readableBytes());
+		return result;
 	}
 	
 	void ensureWritableBytes(size_t len)

@@ -20,7 +20,7 @@ void onMessage(const TcpConnectionPtr &conn, Buffer *pBuffer, int ts)
 int main()
 {
 	EventLoop loop;
-	std::string ip("192.168.209.133");
+	std::string ip("192.168.100.250");
 
 	InetAddress addr(ip, 8000);
 

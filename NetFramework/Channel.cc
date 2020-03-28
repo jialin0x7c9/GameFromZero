@@ -140,6 +140,7 @@ void Channel::handleEvent(int timeStamp)
     if (tied_)
     {
         guard = tie_.lock();
+		printf("TcpConnection count in handleEvent=%d\n", guard.use_count());
         handleEventWithGuard(timeStamp);
     }
     else

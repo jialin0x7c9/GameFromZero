@@ -42,12 +42,13 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn)
 {
+    printf("TcpConnection count before RunInLoop=%ld\n", conn.use_count());
 	loop_->runInLoop(std::bind(&TcpServer::removeConnectionInLoop, this, conn));	
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 {
-    printf("count=%ld\n", conn.use_count());
+    printf("TcpConnection count in removeConnection=%ld\n", conn.use_count());
 	size_t n = connections_.erase(conn->name());
 	loop_->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }

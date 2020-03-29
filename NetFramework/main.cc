@@ -2,6 +2,7 @@
 #include "TcpServer.h"
 #include <string>
 #include "InetAddress.h"
+#include <memory>
 
 
 void onConnection(const TcpConnectionPtr &conn)
@@ -16,19 +17,21 @@ void onMessage(const TcpConnectionPtr &conn, Buffer *pBuffer, int ts)
 	printf(":%s\n", message.c_str());
 }
 
+void threadInit(EventLoop *loop)
+{
+    printf("newThread\n");
+}
 
 int main()
 {
 	EventLoop loop;
-	std::string ip("192.168.100.250");
-
+	std::string ip("192.168.209.134");
 	InetAddress addr(ip, 8000);
-
     TcpServer server(&loop, addr, "kkk");
-    server.setConnectionCallback(std::bind(&onConnection, _1));
-	server.setMessageCallback(std::bind(&onMessage, _1, _2, _3));
+    server.setThreadInitCallback(std::bind(&threadInit, _1));
+    server.setThreadNum(3);
+    server.start();
     loop.loop();
-
     return 0;
 }
 

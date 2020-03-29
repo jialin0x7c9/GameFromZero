@@ -19,6 +19,15 @@ int EventLoop::tid()
 	return t_cachedTid;
 }
 
+void EventLoop::quit()
+{
+    quit_ = true;
+    if (!isInLoopThread())
+    {
+        wakeup();
+    }
+}
+
 void EventLoop::cachedTid()
 {
 	if (t_cachedTid == 0)

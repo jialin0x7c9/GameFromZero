@@ -7,9 +7,10 @@
 TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::string &nameArg, bool reusePort):
         loop_(loop),
         ipPort_("x"),
-        name(nameArg),
+        name_(nameArg),
         acceptor_(new Acceptor(loop, listenAddr, reusePort)),
-        nextConnId_(1)
+        nextConnId_(1),
+        threadPool_(new EventLoopThreadPool(loop, name_))
     {
         acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, _1, _2));
 		acceptor_->listen();
@@ -53,7 +54,16 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 	loop_->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 }
 
-
+void TcpServer::start()
+{
+    printf("TcpServer start\n");
+    if (started_.getAndSet(1) == 0)
+    {
+        printf("TcpServer start after\n");
+        threadPool_->start(threadInitCallback_);
+        loop_->runInLoop(std::bind(&Acceptor::listen, acceptor_.get()));
+    }
+}
 
 
 void TcpServer::setConnectionCallback(const ConnectionCallback &cb)
@@ -62,6 +72,10 @@ void TcpServer::setConnectionCallback(const ConnectionCallback &cb)
 }
 
 
+void TcpServer::setThreadNum(int numThreads)
+{
+    threadPool_->setThreadNum(numThreads);
+}
 
 
 

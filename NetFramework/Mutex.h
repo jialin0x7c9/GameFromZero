@@ -1,3 +1,4 @@
+#pragma once
 #include "noncopyable.h"
 #include <pthread.h>
 
@@ -23,6 +24,11 @@ public:
 	{
 		pthread_mutex_unlock(&mutex_);
 	}
+
+    pthread_mutex_t *getPthreadMutex()
+    {
+        return &mutex_;
+    }
 private:
 	pthread_mutex_t mutex_;
 };

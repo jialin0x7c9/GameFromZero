@@ -6,6 +6,8 @@
 #include <string.h>
 #include <map>
 #include "TcpConnection.h"
+#include "Thread.h"
+#include "EventLoopThreadPool.h"
 
 using std::placeholders::_1;
 using std::placeholders::_2;
@@ -23,6 +25,16 @@ public:
 		messageCallback_ = cb;
 	}
 
+
+    void setThreadNum(int numThreads);
+    typedef std::function<void(EventLoop*)> ThreadInitCallback;
+    void setThreadInitCallback(const ThreadInitCallback &cb)
+    {
+        threadInitCallback_ = cb;
+    }
+
+    void start();
+
 private:
     void newConnection(int sockfd, const InetAddress &peerAddr);
     void removeConnection(const TcpConnectionPtr &conn);
@@ -32,16 +44,17 @@ private:
 private:
     EventLoop *loop_;
     const std::string ipPort_;
-    const std::string name;
+    const std::string name_;
     std::unique_ptr<Acceptor> acceptor_;
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;
-
-
     int nextConnId_;
+    AtomicInt32 started_;
     typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
     ConnectionMap connections_;
+    ThreadInitCallback threadInitCallback_;
+    std::shared_ptr<EventLoopThreadPool> threadPool_;
 };
 
 
